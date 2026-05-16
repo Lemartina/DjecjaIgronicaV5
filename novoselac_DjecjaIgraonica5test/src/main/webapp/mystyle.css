@@ -1,0 +1,218 @@
+/* Globalni stilovi i reset */
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #f4f7f6; /* Svijetlo siva pozadina */
+    color: #333; /* Tamni tekst */
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centriranje sadržaja na stranici */
+}
+/* --- BALONI NA POZADINI --- */
+
+body::before, body::after {
+    content: "";
+    position: absolute;
+    border-radius: 80%; /* Oblik kruga/balona */
+    z-index: -1; /* Osigurava da su baloni iza glavnog sadržaja */
+    filter: blur(100px); /* Blurovanje za mekši izgled */
+}
+
+/* Prvi balon (lijevo) */
+body::before {
+    background: rgba(135, 206, 250, 0.4); /* Sky Blue s prozirnošću */
+    width: 450px;
+    height: 450px;
+    top: -100px; /* Postavlja ga pri vrhu */
+    left: -150px; /* Postavlja ga lijevo van okvira */
+}
+
+/* Drugi balon (desno) */
+body::after {
+    background: rgba(0, 191, 255, 0.3); /* Deep Sky Blue s prozirnošću */
+    width: 550px;
+    height: 550px;
+    bottom: -150px; /* Postavlja ga pri dnu */
+    right: -200px; /* Postavlja ga desno van okvira */
+}
+
+/* Glavni kontejner */
+body > div {
+    max-width: 800px;
+    width: 100%;
+    background-color: #fff; /* Bijela pozadina za glavni blok */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Jača sjena za isticanje */
+    position: relative; /* Osigurava da je glavni sadržaj iznad balona */
+}
+
+
+/* Naslovi */
+h2, h3 {
+    color: #007bff; /* Plava boja za naslove */
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+/* Navigacija i linkovi */
+div > div > div:first-child a {
+    text-decoration: none;
+    color: #007bff;
+    margin-right: 15px;
+}
+
+div > div > div:first-child a:hover {
+    text-decoration: underline;
+}
+
+/* --- Sekcija za Poruke --- */
+
+/* Kontejneri za poruke - c:if test="${not empty poruka/greska}" */
+div > div > div:nth-child(2) {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Stilizacija poruke (uspjeh) */
+div > div > div:nth-child(2) c-if:nth-child(1) div {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Stilizacija greške (error) */
+div > div > div:nth-child(2) c-if:nth-child(2) div {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+
+/* --- Forma za dodavanje (FORMA ZA DODAVANJE) --- */
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Razmak između elemenata forme */
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fafafa;
+}
+
+/* Stilizacija input polja (tekstualni unosi) */
+input[type="text"] {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Osigurava da padding ne širi polje izvan njegove širine */
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+/* Stilizacija gumba */
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s, opacity 0.3s;
+    flex-grow: 1; /* Omogućuje gumbima da se ravnomjerno rasporede u flex kontejneru */
+}
+
+/* Kontejner za gumbe unutar forme */
+form div:last-of-type {
+    display: flex;
+    gap: 15px;
+}
+
+/* Gumb "Dodaj" */
+button[type="submit"]:first-child {
+    background-color: #28a745; /* Zelena boja */
+    color: white;
+}
+
+button[type="submit"]:first-child:hover {
+    background-color: #218838;
+}
+
+/* Gumb "Odustani" */
+button:nth-child(2) {
+    background-color: #6c757d; /* Siva boja */
+    color: white;
+}
+
+button:nth-child(2):hover {
+    background-color: #5a6268;
+}
+
+/* Stilizacija linka unutar gumba "Odustani" (za Odustani) */
+button a {
+    color: white;
+    text-decoration: none;
+    display: block; /* Omogućuje linku da pokrije cijelo područje gumba */
+    padding: 0;
+    margin: 0;
+}
+
+/* Link za Početnu stranicu */
+body > a {
+    display: block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    padding: 10px 15px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body > a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* --- Stilizacija Tablice (TABLICA ZA PRIKAZ POSTOJEĆIH USLUGA) --- */
+
+table {
+    width: 100%;
+    border-collapse: collapse; /* Spajanje rubova ćelija */
+    margin-top: 15px;
+}
+
+thead {
+    background-color: #007bff; /* Plava pozadina za zaglavlje */
+    color: white;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd; /* Donja granica za redove */
+}
+
+/* Efekt "Zebra" redova za bolju čitljivost */
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+    background-color: #e9ecef;
+}
