@@ -1,11 +1,12 @@
 package novoselac.controller.usluge;
 
-import novoselac.dao.UslugaDao;
+import novoselac.service.UslugaService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -14,77 +15,52 @@ import java.util.logging.Logger;
 @WebServlet("/BrisiUsluguController")
 public class BrisiUsluguController extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(BrisiUsluguController.class.getName());
-    private UslugaDao uslugaDao;
+    private UslugaService uslugaService;
     
     @Override
     public void init() throws ServletException {
         super.init();
-        uslugaDao = new UslugaDao();
+        this.uslugaService = new UslugaService();
     }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        
-        try {
-            processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(BrisiUsluguController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        
-        try {
-            processRequest(request, response);
-        } catch (SQLException ex) {
-            Logger.getLogger(BrisiUsluguController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        processRequest(request, response);
     }
     
     private void processRequest(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException, SQLException {
+            throws ServletException, IOException {
         
         String naziv = request.getParameter("naziv");
+        HttpSession session = request.getSession();
 
-        // Provjeri je li naziv proslijeđen
         if (naziv == null || naziv.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Naziv usluge nije proslijeđen.");
-            forwardToView(request, response);
+            session.setAttribute("errorMessage", "Naziv usluge nije proslijeđen.");
+            response.sendRedirect("DodajUsluguController");
             return;
         }
 
         try {
-            // Provjeri postoje li zavisni podaci
-            if (uslugaDao.hasDependentRecords(naziv)) {
-                request.setAttribute("errorMessage", 
-                    "Brisanje nije uspjelo jer postoje zavisni podaci. Usluga je već dodana na posjetu.");
+            boolean uspjeh = uslugaService.obrisiUslugu(naziv);
+            
+            if (uspjeh) {
+                session.setAttribute("successMessage", "Usluga je uspješno obrisana.");
             } else {
-                // Izvrši brisanje
-                boolean deleted = uslugaDao.deleteByNaziv(naziv);
-                if (deleted) {
-                    request.setAttribute("successMessage", "Usluga je uspješno obrisana.");
-                } else {
-                    request.setAttribute("errorMessage", "Nema usluge s tim nazivom.");
-                }
+                session.setAttribute("errorMessage", "Brisanje nije uspjelo. Usluga ima zavisne podatke ili ne postoji.");
             }
+            
         } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, "Greška pri brisanju usluge", ex);
-            request.setAttribute("errorMessage", "Greška u bazi podataka: " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Greška u kontroleru pri brisanju usluge", ex);
+            session.setAttribute("errorMessage", "Greška u bazi podataka: " + ex.getMessage());
         }
         
-        forwardToView(request, response);
-    }
-    
-    private void forwardToView(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException, SQLException {
-        
-        // Dohvati sve usluge za prikaz
-        java.util.List<novoselac.model.Usluga> usluge = uslugaDao.getAllUsluge();
-        request.setAttribute("usluge", usluge);
-        
-      request.getRequestDispatcher("UslugaService").forward(request, response);
+        response.sendRedirect("DodajUsluguController");
     }
 }

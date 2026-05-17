@@ -69,8 +69,8 @@
                                     <td>${usluga.kolicina}</td>
                                     <td>${usluga.jedinicaMjere}</td>
                                     <td class="usluga-actions">
-                                        <form action="../BrisiUsluguController" method="post" style="display:inline;">
-                                            <input type="hidden" name="id" value="${usluga.sifra}">
+                                        <form action="BrisiUsluguController" method="post" style="display:inline;">
+                                            <input type="hidden" name="naziv" value="${usluga.naziv}">
                                             <button type="submit" class="btn-delete"
                                                     onclick="return confirm('Jeste li SIGURNI da želite trajno obrisati uslugu: ${usluga.naziv}?')">
                                                 <i class="fas fa-trash"></i> Trajno obriši
