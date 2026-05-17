@@ -34,6 +34,20 @@ public class UslugaService {
         if (uslugaDAO.hasDependentRecords(naziv)) {
             return false;
         }
-        return uslugaDAO.deleteByNaziv(naziv);
+        return uslugaDAO.obrisiUslugu(naziv);
+    }
+    
+   public boolean azurirajUslugu(Usluga usluga) throws SQLException {
+        if (usluga.getCijena() == null || usluga.getCijena().compareTo(java.math.BigDecimal.ZERO) <= 0 || 
+            usluga.getKolicina() == null || usluga.getKolicina().compareTo(java.math.BigDecimal.ZERO) < 0 ||
+            usluga.getNaziv() == null || usluga.getNaziv().trim().isEmpty() ||
+            usluga.getSifra() <= 0) {
+            return false;
+        }
+        return uslugaDAO.azurirajUslugu(usluga);
+    }
+
+    public Usluga dohvatiUsluguPoNazivu(String naziv) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

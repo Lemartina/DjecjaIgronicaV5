@@ -84,7 +84,7 @@
                                 <td>${usluga.jedinicaMjere}</td>
                                 <!-- ISPRAVLJENI LINKOVI -->
                                 <td>
-                                    <a href="VratiUslugu?id=${usluga.sifra}">Uredi</a>
+                                    <a href="UrediUsluguController?id=${usluga.sifra}">Uredi</a>
                                 </td>
                                 <td>
                                     <a href="BrisiUsluguController?id=${usluga.sifra}" 

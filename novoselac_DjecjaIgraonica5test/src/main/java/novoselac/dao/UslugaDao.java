@@ -21,12 +21,8 @@ public class UslugaDao {
     private static final String USER = "root";
     private static final String PASSWORD = "";
     
-    /**
-     * Uspostavlja vezu s bazom podataka.
-     * Uključuje provjeru postojanja MySQL JDBC Drivera.
-     * @return Aktivna Connection veza.
-     * @throws SQLException ako dođe do pogreške pri povezivanju.
-     */
+    
+    
     private Connection getConnection() throws SQLException {
         try {
             
@@ -77,12 +73,7 @@ public class UslugaDao {
     
     // --- CRUD i pomoćne metode ---
     
-    /**
-     * Dohvaća jednu uslugu iz baze na temelju naziva (Find By Naziv).
-     * @param naziv Naziv usluge koju treba dohvatiti.
-     * @return Objekt Usluga ako je pronađen, inače null.
-     * @throws SQLException ako dođe do pogreške pri radu s bazom.
-     */
+
     public Usluga dohvatiUsluguPoNazivu(String naziv) throws SQLException {
         Usluga usluga = null;
         String sql = "SELECT * FROM usluga WHERE naziv = ?";
@@ -149,10 +140,10 @@ public class UslugaDao {
         }
     }
     
-    /**
-     * Ažurira postojeću uslugu.
+    
+     //Ažurira postojeću uslugu
      
-    public boolean updateUsluga(Usluga usluga) throws SQLException {
+    public boolean azurirajUslugu(Usluga usluga) throws SQLException {
         String sql = "UPDATE usluga SET naziv = ?, cijena = ?, jedinicaMjere = ?, kolicina = ? WHERE sifra = ?";
         
         try (Connection con = getConnection();
@@ -169,11 +160,11 @@ public class UslugaDao {
         }
     }
     
-    /**
-     * Briše uslugu po nazivu.
-     * @throws java.sql.SQLException
-          */
-    public boolean deleteByNaziv(String naziv) throws SQLException {
+    
+     //Briše uslugu po nazivu.
+     //@throws java.sql.SQLException
+          
+    public boolean obrisiUslugu(String naziv) throws SQLException {
         String sql = "DELETE FROM usluga WHERE naziv = ?";
         
         try (Connection con = getConnection();
