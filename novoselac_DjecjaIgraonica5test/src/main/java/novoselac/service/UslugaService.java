@@ -30,11 +30,17 @@ public class UslugaService {
         return uslugaDAO.dodajUslugu(usluga);
     }
     
-    public boolean obrisiUslugu(String naziv) throws SQLException {
-        if (uslugaDAO.hasDependentRecords(naziv)) {
+   public boolean obrisiUslugu(int sifra) throws SQLException {
+        if (sifra <= 0) {
             return false;
         }
-        return uslugaDAO.obrisiUslugu(naziv);
+        
+        // Provjera ovisnih zapisa u bazi se sada također radi preko jedinstvene šifre
+        if (uslugaDAO.hasDependentRecords(sifra)) {
+            return false;
+        }
+        
+        return uslugaDAO.obrisiUslugu(sifra);
     }
     
    public boolean azurirajUslugu(Usluga usluga) throws SQLException {

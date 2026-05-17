@@ -1,4 +1,3 @@
-//BAZA PODATAKA SPREMA/ČITA
 package novoselac.dao;
 
 import novoselac.model.Usluga;
@@ -11,7 +10,6 @@ import java.util.logging.Logger;
 
 /**
  * Klasa zadužena isključivo za CRUD operacije nad tablicom 'usluga'.
- * Konsolidacija funkcionalnosti iz oba prethodna DAO-a.
  */
 public class UslugaDao {
     private static final Logger LOGGER = Logger.getLogger(UslugaDao.class.getName());
@@ -21,11 +19,8 @@ public class UslugaDao {
     private static final String USER = "root";
     private static final String PASSWORD = "";
     
-    
-    
     private Connection getConnection() throws SQLException {
         try {
-            
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException ex) {
             LOGGER.log(Level.SEVERE, "MySQL JDBC Driver nije pronađen", ex);
@@ -36,19 +31,17 @@ public class UslugaDao {
     
     /**
      * Mapira ResultSet (redak iz baze) u objekt Usluga.
-     * Uklanja ponavljanje koda (refaktoriranje).
      */
     private Usluga mapResultSetToUsluga(ResultSet rs) throws SQLException {
         Usluga usluga = new Usluga();
         
-        // Fleksibilno čitanje šifre
+        // Fleksibilno čitanje šifre (podržava 'sifra' ili 'id' iz baze)
         try {
             usluga.setSifra(rs.getInt("sifra"));
         } catch (SQLException e) {
             try {
                 usluga.setSifra(rs.getInt("id"));
             } catch (SQLException e2) {
-                // LOGGER.warning("DEBUG: Nije pronađen stupac 'sifra' ili 'id'");
                 usluga.setSifra(0);
             }
         }
@@ -71,8 +64,33 @@ public class UslugaDao {
         return usluga;
     }
     
-    // --- CRUD i pomoćne metode ---
+    // --- CRUD metode ---
     
+    /**
+     * NOVO: Dohvaća jednu specifičnu uslugu preko njezine šifre.
+     * Potrebno za Service sloj i BrisiUsluguController (doGet).
+     */
+    public Usluga getUslugaBySifra(int sifra) throws SQLException {
+        Usluga usluga = null;
+        // Budući da u azurirajUslugu koristiš 'WHERE sifra = ?', držimo se stupca 'sifra'
+        String sql = "SELECT * FROM usluga WHERE sifra = ?";
+        
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+
+            pst.setInt(1, sifra);
+            
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    usluga = mapResultSetToUsluga(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Greška pri dohvatu usluge po šifri: " + sifra, ex);
+            throw ex;
+        }
+        return usluga;
+    }
 
     public Usluga dohvatiUsluguPoNazivu(String naziv) throws SQLException {
         Usluga usluga = null;
@@ -106,13 +124,9 @@ public class UslugaDao {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             
-            LOGGER.info("DEBUG: Pozvan getAllUsluge()");
-            
             while (rs.next()) {
                 usluge.add(mapResultSetToUsluga(rs));
             }
-            
-            LOGGER.info("DEBUG: Pronađeno usluga: " + usluge.size());
             
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Greška u getAllUsluge: ", e);
@@ -140,9 +154,9 @@ public class UslugaDao {
         }
     }
     
-    
-     //Ažurira postojeću uslugu
-     
+    /**
+     * Ažurira postojeću uslugu.
+     */
     public boolean azurirajUslugu(Usluga usluga) throws SQLException {
         String sql = "UPDATE usluga SET naziv = ?, cijena = ?, jedinicaMjere = ?, kolicina = ? WHERE sifra = ?";
         
@@ -160,24 +174,49 @@ public class UslugaDao {
         }
     }
     
-    
-     //Briše uslugu po nazivu.
-     //@throws java.sql.SQLException
-          
-    public boolean obrisiUslugu(String naziv) throws SQLException {
-        String sql = "DELETE FROM usluga WHERE naziv = ?";
+    /**
+     * POPRAVLJENO: Briše uslugu po šifri (int).
+     * Popravljen pst.setInt umjesto pst.setString.
+     */
+    public boolean obrisiUslugu(int sifra) throws SQLException {
+        String sql = "DELETE FROM usluga WHERE sifra = ?";
         
         try (Connection con = getConnection();
              PreparedStatement pst = con.prepareStatement(sql)) {
             
-            pst.setString(1, naziv);
+            pst.setInt(1, sifra);
             int row = pst.executeUpdate();
             return row > 0;
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Greška pri brisanju usluge sa šifrom: " + sifra, ex);
+            throw ex;
         }
     }
     
     /**
-     * Provjerava ima li usluga zavisne (povezane) zapise u 'uslugaposjeta'.
+     * POPRAVLJENO: Provjerava ima li usluga zavisne zapise preko primarnog ključa (sifra).
+     */
+    public boolean hasDependentRecords(int sifra) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM uslugaposjeta WHERE usluga = ?";
+        
+        try (Connection con = getConnection();
+             PreparedStatement pst = con.prepareStatement(sql)) {
+            
+            pst.setInt(1, sifra);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Greška pri provjeri zavisnih zapisa za šifru: " + sifra, ex);
+            throw ex;
+        }
+        return false;
+    }
+
+    /**
+     * Pomoćna metoda (opcionalna) ako i dalje negdje u aplikaciji provjeravaš preko naziva.
      */
     public boolean hasDependentRecords(String naziv) throws SQLException {
         String sql = "SELECT COUNT(*) FROM usluga a " +

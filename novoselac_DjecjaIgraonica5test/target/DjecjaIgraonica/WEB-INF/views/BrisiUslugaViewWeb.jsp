@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Brisanje usluga</title>
+    <title>Potvrda brisanja usluge</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>
     <link rel="stylesheet" href="../css/stili.css">
 </head>
@@ -12,12 +12,9 @@
         <div class="usluga-wrapper">
             <!-- NAVIGACIJA -->
             <div class="usluga-nav">
-                <h2><i class="fas fa-trash"></i> Brisanje usluga</h2>
-                <a href="pregledUsluga.jsp" class="usluga-link btn-view">
+                <h2><i class="fas fa-trash"></i> Potvrda brisanja usluge</h2>
+                <a href="PregledUslugaController" class="usluga-link btn-view">
                     <i class="fas fa-list"></i> Pregled svih usluga
-                </a>
-                <a href="dodajUslugu.jsp" class="usluga-link usluga-link-primary">
-                    <i class="fas fa-plus"></i> Dodaj novu uslugu
                 </a>
                 <a href="../index.html" class="usluga-link">
                     <i class="fas fa-home"></i> Početna stranica
@@ -25,28 +22,23 @@
             </div>
 
             <!-- PORUKE -->
-            <c:if test="${not empty successMessage}">
-                <div class="usluga-success">
-                    <i class="fas fa-check-circle"></i> ${successMessage}
-                </div>
-            </c:if>
             <c:if test="${not empty errorMessage}">
                 <div class="usluga-error">
                     <i class="fas fa-exclamation-triangle"></i> ${errorMessage}
                 </div>
             </c:if>
 
-            <!-- TABLICA ZA BRISANJE -->
+            <!-- KARTICA ILI DETALJI ZA POTVRDU BRISANJA -->
             <c:choose>
-                <c:when test="${empty usluge}">
+                <c:when test="${empty uslugaZaBrisanje}">
                     <div class="usluga-error">
-                        <i class="fas fa-info-circle"></i> Nema usluga za brisanje.
+                        <i class="fas fa-info-circle"></i> Podaci o usluzi nisu učitani ili usluga ne postoji.
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <div class="usluga-error">
+                    <div class="usluga-error" style="background-color: #fff3cd; color: #856404; border-color: #ffeeba;">
                         <i class="fas fa-exclamation-triangle"></i> 
-                        <strong>UPOZORENJE:</strong> Brisanje je trajna operacija!
+                        <strong>UPOZORENJE:</strong> Jeste li sigurni da želite trajno obrisati ovu uslugu? Ova operacija se ne može poništiti!
                     </div>
                     
                     <table class="usluga-table">
@@ -57,30 +49,33 @@
                                 <th>Cijena (EUR)</th>
                                 <th>Količina</th>
                                 <th>Jedinica mjere</th>
-                                <th>Brisanje</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach var="usluga" items="${usluge}">
-                                <tr>
-                                    <td>${usluga.sifra}</td>
-                                    <td><strong>${usluga.naziv}</strong></td>
-                                    <td>${usluga.cijena} €</td>
-                                    <td>${usluga.kolicina}</td>
-                                    <td>${usluga.jedinicaMjere}</td>
-                                    <td class="usluga-actions">
-                                        <form action="BrisiUsluguController" method="post" style="display:inline;">
-                                            <input type="hidden" name="naziv" value="${usluga.naziv}">
-                                            <button type="submit" class="btn-delete"
-                                                    onclick="return confirm('Jeste li SIGURNI da želite trajno obrisati uslugu: ${usluga.naziv}?')">
-                                                <i class="fas fa-trash"></i> Trajno obriši
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            </c:forEach>
+                            <tr>
+                                <td>${uslugaZaBrisanje.sifra}</td>
+                                <td><strong>${uslugaZaBrisanje.naziv}</strong></td>
+                                <td>${uslugaZaBrisanje.cijena} €</td>
+                                <td>${uslugaZaBrisanje.kolicina}</td>
+                                <td>${uslugaZaBrisanje.jedinicaMjere}</td>
+                            </tr>
                         </tbody>
                     </table>
+
+                    <!-- FORMA KOJA ŠALJE ZAHTJEV ZA STVARNO BRISANJE -->
+                    <div style="text-align: center; margin-top: 20px;">
+                        <form action="BrisiUsluguController" method="post" style="display:inline;">
+                            <input type="hidden" name="sifra" value="${uslugaZaBrisanje.sifra}">
+                            
+                            <button type="submit" class="btn-delete" style="padding: 10px 20px; font-size: 16px;">
+                                <i class="fas fa-trash"></i> Da, trajno obriši
+                            </button>
+                            
+                            <a href="PregledUslugaController" class="usluga-link" style="margin-left: 15px; background: #6c757d; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none;">
+                                Odustani
+                            </a>
+                        </form>
+                    </div>
                 </c:otherwise>
             </c:choose>
         </div>
