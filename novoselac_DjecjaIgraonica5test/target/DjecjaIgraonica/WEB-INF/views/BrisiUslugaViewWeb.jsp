@@ -38,7 +38,7 @@
                 <c:otherwise>
                     <div class="usluga-error" style="background-color: #fff3cd; color: #856404; border-color: #ffeeba;">
                         <i class="fas fa-exclamation-triangle"></i> 
-                        <strong>UPOZORENJE:</strong> Jeste li sigurni da želite trajno obrisati ovu uslugu? Ova operacija se ne može poništiti!
+                        <strong>UPOZORENJE:</strong> Jeste li sigurni da želite trajno obrisati ovu uslugu? Ova operacija se ne može poništiti! Ukoliko usluga ima zavisne podatke neće biti obrisana!
                     </div>
                     
                     <table class="usluga-table">
